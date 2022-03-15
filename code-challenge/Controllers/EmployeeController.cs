@@ -57,5 +57,24 @@ namespace challenge.Controllers
 
             return Ok(newEmployee);
         }
+
+        /// <summary>
+        /// HTTP Get endpoint to get the reporting structure for the passed in employee id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("ReportingStructure/{id}")]
+        public IActionResult GetReportingStructure(string id)
+        {
+            var employee = _employeeService.GetById(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            var reportingStructure = new ReportingStructure(employee);
+            return Ok(reportingStructure);
+        }
     }
 }
