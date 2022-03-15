@@ -29,7 +29,32 @@ namespace challenge.Repositories
 
         public Employee GetById(string id)
         {
-            return _employeeContext.Employees.SingleOrDefault(e => e.EmployeeId == id);
+            // added include statement to bring in child entities
+            return _employeeContext.Employees.Include("DirectReports").Select(e => new Employee
+            {
+                EmployeeId = e.EmployeeId,
+                Department = e.Department,
+                FirstName = e.FirstName,
+                DirectReports = e.DirectReports.Select(x => new Employee
+                {
+                    EmployeeId = x.EmployeeId,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Department = x.Department,
+                    Position = x.Position,
+                    DirectReports = x.DirectReports.Select(se => new Employee
+                    {
+                        Position = se.Position,
+                        EmployeeId = se.EmployeeId,
+                        FirstName = se.FirstName,
+                        LastName = se.LastName,
+                        Department = se.Department,
+                        DirectReports = se.DirectReports
+                    }).ToList(),
+                }).ToList(),
+                LastName = e.LastName,
+                Position = e.Position,
+            }).SingleOrDefault(x => x.EmployeeId == id);
         }
 
         public Task SaveAsync()
