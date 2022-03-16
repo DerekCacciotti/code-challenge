@@ -6,7 +6,7 @@ namespace challenge.Models
     {
         public string CompensationId { get; set; }
         public string EmployeeId { get; set; }
-        public double salary { get; set; }
-        public DateTime effectiveDate { get; set; }
+        public double Salary { get; set; }
+        public DateTime EffectiveDate { get; set; }
     }
 }
