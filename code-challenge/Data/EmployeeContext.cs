@@ -11,9 +11,9 @@ namespace challenge.Data
     {
         public EmployeeContext(DbContextOptions<EmployeeContext> options) : base(options)
         {
-
         }
 
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Compensation> Compensations { get; set; }
     }
 }

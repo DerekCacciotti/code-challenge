@@ -14,11 +14,13 @@ namespace challenge.Controllers
     {
         private readonly ILogger _logger;
         private readonly IEmployeeService _employeeService;
+        private readonly ICompensationService _compensationService;
 
-        public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService)
+        public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService, ICompensationService compensationService)
         {
             _logger = logger;
             _employeeService = employeeService;
+            _compensationService = compensationService;
         }
 
         [HttpPost]
@@ -45,7 +47,7 @@ namespace challenge.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult ReplaceEmployee(String id, [FromBody]Employee newEmployee)
+        public IActionResult ReplaceEmployee(String id, [FromBody] Employee newEmployee)
         {
             _logger.LogDebug($"Recieved employee update request for '{id}'");
 
@@ -63,8 +65,7 @@ namespace challenge.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("ReportingStructure/{id}")]
+        [HttpGet("ReportingStructure/{id}")]
         public IActionResult GetReportingStructure(string id)
         {
             var employee = _employeeService.GetById(id);
@@ -75,6 +76,34 @@ namespace challenge.Controllers
 
             var reportingStructure = new ReportingStructure(employee);
             return Ok(reportingStructure);
+        }
+
+        [HttpPost("CreateCompensation")]
+        public IActionResult CreateCompensation([FromBody] Compensation compensation)
+        {
+            if (compensation == null)
+            {
+                return BadRequest();
+            }
+            _compensationService.Create(compensation);
+            return Ok(compensation);
+        }
+
+        [HttpGet("GetCompensation/{id}")]
+        public IActionResult GetCompensation(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("EmployeeId is required");
+            }
+
+            var compensation = _compensationService.GetByEmployeeId(id);
+            if (compensation == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(compensation);
         }
     }
 }
